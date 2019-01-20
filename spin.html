@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+	</head>
+
+	<body style="margin: 0">
+		<script type="text/javascript" src="js/three.js"></script>
+		<script type="text/javascript" src="js/TrackballControls.js"></script>
+		<script>
+			var camera, controls, scene, renderer;
+
+			init();
+			animate();
+			render();
+
+			function init() {
+				camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
+				camera.position.z = 1000;
+
+				controls = new THREE.TrackballControls(camera);
+				controls.addEventListener('change', render);
+				controls.update();
+
+				scene = new THREE.Scene();
+
+				var boxGeo = new THREE.BoxGeometry(200, 400, 50);
+				var boxMat = new THREE.MeshBasicMaterial({
+					color: 0xffffff,
+					transparent: true,
+					opacity: 0.15
+				});
+				var box = new THREE.Mesh(boxGeo, boxMat);
+				scene.add(box);
+
+				var wireGeo = new THREE.EdgesGeometry(boxGeo);
+				var wireMat = new THREE.LineBasicMaterial({
+					color: 0xffffff,
+					linewidth: 1
+				});
+				var wireframe = new THREE.LineSegments(wireGeo, wireMat);
+				box.add(wireframe);
+
+				var itemGeo = new THREE.BoxGeometry(100, 100, 4);
+				var loader = new THREE.TextureLoader();
+				var itemMat = new THREE.MeshBasicMaterial({
+					map: loader.load('https://upload.wikimedia.org/wikipedia/commons/b/bd/Berliner-Dom-1905.jpg'),
+					side: THREE.DoubleSide
+				});
+				var item = new THREE.Mesh(itemGeo, itemMat);
+				item.position.y = 30;
+				item.position.z = -2;
+				box.add(item);
+
+				renderer = new THREE.WebGLRenderer();
+				renderer.setSize(window.innerWidth, window.innerHeight);
+				document.body.appendChild(renderer.domElement);
+			};
+
+			function animate() {
+				requestAnimationFrame(animate);
+				controls.update();
+			}
+
+			function render() {
+				renderer.render(scene, camera);
+			}
+		</script>
+	</body>
+</html>
